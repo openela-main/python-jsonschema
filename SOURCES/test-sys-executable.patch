@@ -1,0 +1,12 @@
+diff -U3 -r jsonschema-2.6.0-orig/jsonschema/tests/test_jsonschema_test_suite.py jsonschema-2.6.0/jsonschema/tests/test_jsonschema_test_suite.py
+--- jsonschema-2.6.0-orig/jsonschema/tests/test_jsonschema_test_suite.py	2016-11-27 16:49:17.000000000 +0100
++++ jsonschema-2.6.0/jsonschema/tests/test_jsonschema_test_suite.py	2018-05-30 15:29:44.840669853 +0200
+@@ -47,7 +47,7 @@
+ JSONSCHEMA_SUITE = os.path.join(SUITE, "bin", "jsonschema_suite")
+ 
+ remotes_stdout = subprocess.Popen(
+-    ["python", JSONSCHEMA_SUITE, "remotes"], stdout=subprocess.PIPE,
++    [sys.executable, JSONSCHEMA_SUITE, "remotes"], stdout=subprocess.PIPE,
+ ).stdout
+ 
+ with closing(remotes_stdout):
