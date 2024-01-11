@@ -1,0 +1,58 @@
+diff -ru jsonschema-2.6.0.orig/jsonschema/compat.py jsonschema-2.6.0/jsonschema/compat.py
+--- jsonschema-2.6.0.orig/jsonschema/compat.py	2015-11-30 13:58:04.000000000 +0100
++++ jsonschema-2.6.0/jsonschema/compat.py	2017-07-21 12:57:25.768508757 +0200
+@@ -8,6 +8,7 @@
+     from collections.abc import MutableMapping, Sequence  # noqa
+ 
+ PY3 = sys.version_info[0] >= 3
++PY27 = sys.version_info[:2] == (2, 7)
+ 
+ if PY3:
+     zip = zip
+@@ -32,8 +33,10 @@
+     int_types = int, long
+     iteritems = operator.methodcaller("iteritems")
+ 
+-    from functools32 import lru_cache
+-
++    if PY27:
++        from repoze.lru import lru_cache
++    else:
++        from functools32 import lru_cache
+ 
+ # On python < 3.3 fragments are not handled properly with unknown schemes
+ def urlsplit(url):
+diff -ru jsonschema-2.6.0.orig/setup.py jsonschema-2.6.0/setup.py
+--- jsonschema-2.6.0.orig/setup.py	2016-08-28 04:29:36.000000000 +0200
++++ jsonschema-2.6.0/setup.py	2017-07-21 13:28:06.503903938 +0200
+@@ -1,6 +1,7 @@
+ import os
+ 
+ from setuptools import setup
++from jsonschema import _version
+ 
+ 
+ with open(os.path.join(os.path.dirname(__file__), "README.rst")) as readme:
+@@ -22,14 +23,14 @@
+ 
+ extras_require = {
+     "format" : ["rfc3987", "strict-rfc3339", "webcolors"],
+-    ":python_version=='2.7'": ["functools32"],
++    ":python_version=='2.7'": ["repoze.lru"],
+ }
+ 
+ setup(
+     name="jsonschema",
++    version=_version.__version__,
+     packages=["jsonschema", "jsonschema.tests"],
+     package_data={"jsonschema": ["schemas/*.json"]},
+-    setup_requires=["vcversioner>=2.16.0.0"],
+     extras_require=extras_require,
+     author="Julian Berman",
+     author_email="Julian@GrayVines.com",
+@@ -39,5 +40,4 @@
+     long_description=long_description,
+     url="http://github.com/Julian/jsonschema",
+     entry_points={"console_scripts": ["jsonschema = jsonschema.cli:main"]},
+-    vcversioner={"version_module_paths" : ["jsonschema/_version.py"]},
+ )
